@@ -12,6 +12,15 @@ declare namespace ApiGaoDe {
         /** 地点关键字 */
         keywords: string
     }
+
+    /** 天气查询 */
+    interface WeatherSearchRequest extends CommonKey {
+        key: string
+        city: string
+        /** base(实况) all(预报) */
+        extensions?: 'base' | 'all'
+        output?: 'JSON' | 'XML'
+    }
 }
 
 declare namespace ApiCity {
@@ -19,5 +28,32 @@ declare namespace ApiCity {
         name: string
         adcode: string
         citycode?: string
+    }
+
+    /** 搜索查询出的结果 */
+    interface Location {
+        adcode: string
+        address: string
+        adname: string
+        id: string
+        name: string
+        location: string
+        pcode: string
+        [propName: string]: any
+    }
+}
+
+declare namespace ApiWeather {
+    interface Weather {
+        adcode: string
+        province: string
+        city: string
+        humidity: string
+        reporttime: string
+        temperature: string
+        weather: string
+        winddirection: string
+        windpower: string
+        [propName: string]: any
     }
 }
