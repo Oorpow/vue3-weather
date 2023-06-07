@@ -3,11 +3,9 @@ import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useSearchStore } from '@/stores/search'
-import { useWeatherStore } from '@/stores/weather'
 
 const router = useRouter()
 const searchStore = useSearchStore()
-const weatherStore = useWeatherStore()
 const { relatedLocations } = storeToRefs(searchStore)
 
 const searchKeyword = ref('')

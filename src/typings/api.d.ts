@@ -44,7 +44,7 @@ declare namespace ApiCity {
 }
 
 declare namespace ApiWeather {
-    interface Weather {
+    interface WeatherLive {
         adcode: string
         province: string
         city: string
@@ -55,5 +55,13 @@ declare namespace ApiWeather {
         winddirection: string
         windpower: string
         [propName: string]: any
+    }
+    interface WeatherCast {
+        date: Date | string
+        dayweather: string
+        daytemp: string
+        nighttemp: string
+        nightweather: string
+        week: string
     }
 }
