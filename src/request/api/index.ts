@@ -15,3 +15,4 @@ export const searchByKeywords = ({ key, keywords }: ApiGaoDe.SearchRequest) =>
 export const queryWeatherOfTargetLocation =
 	({ key, city, extensions }: ApiGaoDe.WeatherSearchRequest) =>
 		requestInstance.get(`/v3/weather/weatherInfo?key=${key}&city=${city}&extensions=${extensions}`)
+

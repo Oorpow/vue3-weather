@@ -21,6 +21,12 @@ declare namespace ApiGaoDe {
         extensions?: 'base' | 'all'
         output?: 'JSON' | 'XML'
     }
+
+    /** 输入提示 */
+    interface InputTips extends CommonKey {
+        keywords: string
+        city?: 'citycode' | 'adcode'
+    }
 }
 
 declare namespace ApiCity {
@@ -33,17 +39,13 @@ declare namespace ApiCity {
     /** 搜索查询出的结果 */
     interface Location {
         adcode: string
-        address: string
-        adname: string
-        id: string
+        citycode: string
         name: string
-        location: string
-        pcode: string
-        [propName: string]: any
     }
 }
 
 declare namespace ApiWeather {
+    /** 实况天气 */
     interface WeatherLive {
         adcode: string
         province: string
@@ -56,6 +58,7 @@ declare namespace ApiWeather {
         windpower: string
         [propName: string]: any
     }
+    /** 预报天气 */
     interface WeatherCast {
         date: Date | string
         dayweather: string

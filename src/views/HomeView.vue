@@ -2,30 +2,30 @@
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
-import { useSearchStore } from '@/stores/search'
+import { useCityStore } from '@/stores/city'
 
 const router = useRouter()
-const searchStore = useSearchStore()
-const { relatedLocations } = storeToRefs(searchStore)
+const cityStore = useCityStore()
+const { relatedLocations } = storeToRefs(cityStore)
 
 const searchKeyword = ref('')
 /** 根据用户输入的关键字查找对应的地区 */
 const searchCityOrState = () => {
-	searchKeyword.value === ''
-		? searchStore.clearRelatedLocations()
-		: searchStore.getResBySearchKeywords(searchKeyword.value)
+	searchKeyword.value.trim() === ''
+		? cityStore.clearRelatedLocations()
+		: cityStore.pickAdcodeFromAdcodeList(searchKeyword.value)
 }
 
 /**
  * 根据acode获取某个地点的天气
- * @param acode 
+ * @param acode
  */
 const getWeatherByLocationAcode = (acode: string) => {
 	router.push({
 		name: 'weather',
 		params: {
-			city: acode
-		}
+			city: acode,
+		},
 	})
 }
 </script>
@@ -36,9 +36,9 @@ const getWeatherByLocationAcode = (acode: string) => {
 			<input
 				v-model="searchKeyword"
 				@change="searchCityOrState"
-				type="text"
+				type="search"
 				placeholder="Search for a city or a state"
-				class="w-full px-1 py-2 text-center bg-transparent border-b focus:outline-none focus:border-weather-secondary"
+				class="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
 			/>
 			<!-- 搜索结果 -->
 			<ul
@@ -46,8 +46,8 @@ const getWeatherByLocationAcode = (acode: string) => {
 			>
 				<li
 					class="py-2 cursor-pointer"
-					v-for="location in relatedLocations"
-					:key="location.id"
+					v-for="(location, i) in relatedLocations"
+					:key="i"
 					@click="getWeatherByLocationAcode(location.adcode)"
 				>
 					{{ location.name }}
