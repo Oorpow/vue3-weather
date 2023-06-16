@@ -42,6 +42,17 @@ declare namespace ApiCity {
         citycode: string
         name: string
     }
+
+    /** 当前IP显示的位置信息 */
+    interface IpLocationRes {
+        adcode: string
+        city: string
+        info: string
+        infocode: string
+        province: string
+        rectangle: string
+        status: string
+    }
 }
 
 declare namespace ApiWeather {
@@ -66,5 +77,15 @@ declare namespace ApiWeather {
         nighttemp: string
         nightweather: string
         week: string
+    }
+}
+
+declare namespace ApiStaticMap {
+    interface StaticMapReq {
+        key: string
+        location: string
+        /** 缩放区间[1,17] */
+        zoom: string
+        [propName: string]: any
     }
 }

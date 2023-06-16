@@ -1,11 +1,21 @@
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { searchByKeywords } from '@/request/api'
+import { locateByIP } from '@/request/api'
 
 const gaodeKey = import.meta.env.VITE_API_KEY
 
 export const useSearchStore = defineStore('searchStore', {
 	state: () => ({
 		relatedLocations: <ApiCity.Location[]>[],
+		currentLocation: ref<ApiCity.IpLocationRes>({
+			adcode: '',
+			city: '',
+			info: '',
+			infocode: '',
+			province: '',
+			rectangle: '',
+			status: ''
+		}),
 	}),
 	actions: {
 		// 搜索POI
@@ -18,10 +28,10 @@ export const useSearchStore = defineStore('searchStore', {
 		// 		console.log(error)
 		// 	}
 		// },
-		// // 清空搜索结果
-		// clearRelatedLocations() {
-		// 	this.relatedLocations.length = 0
-		// },
-        /** 根据关键字查询行政区 */
+		/** 根据ip获取定位信息 */
+		async getLocationByIP() {
+			const res = await locateByIP(gaodeKey)
+			this.currentLocation = res.data
+		},
 	},
 })
