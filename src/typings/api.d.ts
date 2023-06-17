@@ -27,6 +27,11 @@ declare namespace ApiGaoDe {
         keywords: string
         city?: 'citycode' | 'adcode'
     }
+
+    type Key = Pick<CommonKey, 'key'>
+    type ReverseReq = Key & {
+        location: string
+    }
 }
 
 declare namespace ApiCity {

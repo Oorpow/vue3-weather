@@ -44,7 +44,6 @@ export const useWeatherStore = defineStore('weatherStore', {
 			})
 			this.weatherInfoCasts.length = 0
 			this.weatherInfoCasts.push(...res.data.forecasts[0].casts)
-			console.log(this.weatherInfoCasts);
 		}
 	},
 })

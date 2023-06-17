@@ -25,15 +25,21 @@ export const queryWeatherOfTargetLocation = ({
 export const locateByIP = (key: string) =>
 	requestInstance.get(`/v3/ip?key=${key}`)
 
+/** 逆地理编码 */
+export const reverseGeocoding = ({ key, location }: ApiGaoDe.ReverseReq) =>
+	requestInstance.get(
+		`/v3/geocode/regeo?key=${key}&location=${location}&extensions=all`
+	)
+
 /** 静态地区绘制 */
 export const getStaticMap = ({
 	key,
 	location,
-	zoom,
+	zoom = '17',
 }: ApiStaticMap.StaticMapReq) =>
 	requestInstance.get(
-		`/v3/staticmap?key=${key}&location=${location}&zoom=${zoom}&scale=2`,
+		`/v3/staticmap?key=${key}&location=${location}&zoom=${zoom}&scale=2&markers=mid,0xFF0000,A:${location}`,
 		{
-			responseType: 'blob'
+			responseType: 'blob',
 		}
 	)

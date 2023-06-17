@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useCityStore } from '@/stores/city'
-import { useWeatherStore } from '@/stores/weather'
-import { useSearchStore } from '@/stores/search'
-import { useMapStore } from '@/stores/map'
+import {
+	useWeatherStore,
+	useCityStore,
+	useSearchStore,
+	useMapStore,
+} from '@/stores'
+import BaseMap from '@/components/BaseMap.vue'
 
 const weatherStore = useWeatherStore()
 const cityStore = useCityStore()
@@ -13,7 +16,7 @@ const mapStore = useMapStore()
 
 const { weatherInfoLives, weatherInfoCasts } = storeToRefs(weatherStore)
 const { relatedLocations } = storeToRefs(cityStore)
-const { currentLocation } = storeToRefs(searchStore)
+const { currentAdcode } = storeToRefs(searchStore)
 const { staticMapImage } = storeToRefs(mapStore)
 
 const searchKeyword = ref('')
@@ -33,6 +36,10 @@ const getWeatherByLocationAcode = async (acode: string) => {
 	await weatherStore.getWeatherCastsOfCity(acode)
 }
 
+const currentGeo = ref({
+	longitude: 0,
+	latitude: 0,
+})
 /**
  * 用户授权是否允许获取当前所在位置
  */
@@ -48,25 +55,25 @@ const getUserCurrentLocation = () => {
 	)
 }
 
-/** 成功获取用户位置信息的回调 */
+/** 成功获取用户位置信息的回调，并根据经纬度制作静态地图 */
 const handleSuccessGetUserLocation = (pos: GeolocationPosition) => {
 	const crd = pos.coords
-	const combineStr = crd.longitude + ',' + crd.latitude
-	mapStore.queryStaticMapByLocation(combineStr).then(() => {
-		console.log(mapStore.staticMapImage)
+	// 经度,纬度
+	currentGeo.value.longitude = Number(crd.longitude.toFixed(6))
+	currentGeo.value.latitude = Number(crd.latitude.toFixed(6))
+	const combineStr = crd.longitude.toFixed(6) + ',' + crd.latitude.toFixed(6)
+	// 将经纬度转化为当前位置所处城市的acode
+	searchStore.reverseGeoLocation(combineStr).then(() => {
+		// 根据adcode获取当前城市的天气
+		getWeatherByLocationAcode(currentAdcode.value)
 	})
+	// 根据经纬度绘制静态地图
+	// mapStore.queryStaticMapByLocation(combineStr)
 }
 
+// 获取用户当前位置
 onMounted(() => {
 	getUserCurrentLocation()
-	searchStore
-		.getLocationByIP()
-		.then(() => {
-			getWeatherByLocationAcode(currentLocation.value.adcode)
-		})
-		.catch((err) => {
-			console.warn(err)
-		})
 })
 
 const weekDays = [
@@ -78,8 +85,7 @@ const weekDays = [
 	'星期六',
 	'星期日',
 ]
-
-// 日期计算
+/** 日期计算 */
 const computeDay = (weekday: number) => {
 	const day = new Date().getDay()
 	return weekday === day ? '今日' : weekDays[weekday - 1]
@@ -137,9 +143,19 @@ const computeDay = (weekday: number) => {
 			<hr
 				class="border-white border-opacity-10 border w-full my-[20px]"
 			/>
-			<div class="flex flex-1 justify-center">
+			<!-- AMap地图 -->
+			<div id="map-container"></div>
+			<!-- <template v-show="currentGeo.longitude !== 0"> -->
+				<BaseMap
+					:longitude="currentGeo.longitude"
+					:latitude="currentGeo.latitude"
+				/>
+			<!-- </template> -->
+
+			<!-- 静态地图 -->
+			<!-- <div class="flex flex-1 justify-center">
 				<img :src="staticMapImage" alt="" />
-			</div>
+			</div> -->
 			<hr
 				class="border-white border-opacity-10 border w-full my-[20px]"
 			/>

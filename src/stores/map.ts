@@ -8,6 +8,7 @@ export const useMapStore = defineStore('mapStore', {
         staticMapImage: ''
     }),
 	actions: {
+        /** 获取静态地图 */
 		async queryStaticMapByLocation(location: string) {
 			const res = await getStaticMap({
                 key: gaodeKey,

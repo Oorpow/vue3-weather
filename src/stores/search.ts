@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { locateByIP } from '@/request/api'
+import { locateByIP, reverseGeocoding } from '@/request/api'
 
 const gaodeKey = import.meta.env.VITE_API_KEY
 
@@ -16,6 +16,7 @@ export const useSearchStore = defineStore('searchStore', {
 			rectangle: '',
 			status: ''
 		}),
+		currentAdcode: ''
 	}),
 	actions: {
 		// 搜索POI
@@ -30,8 +31,24 @@ export const useSearchStore = defineStore('searchStore', {
 		// },
 		/** 根据ip获取定位信息 */
 		async getLocationByIP() {
-			const res = await locateByIP(gaodeKey)
-			this.currentLocation = res.data
+			try {
+				const res = await locateByIP(gaodeKey)
+				this.currentLocation = res.data
+			} catch (error) {
+				console.warn(error)
+			}
 		},
+		/** 逆地理编码转换，经纬度 => acode */
+		async reverseGeoLocation(location: string) {
+			try {
+				const res = await reverseGeocoding({
+					key: gaodeKey,
+					location
+				})
+				this.currentAdcode = res.data.regeocode.addressComponent.adcode
+			} catch (error) {
+				console.warn(error)
+			}
+		}
 	},
 })
