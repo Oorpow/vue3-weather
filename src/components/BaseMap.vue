@@ -1,5 +1,5 @@
 <template>
-	<div id="container" style="font-size: medium;" class="w-full h-[500px] m-0 p-0"></div>
+	<div id="container" class="w-full h-[500px] m-0 p-0"></div>
 </template>
 
 <script setup lang="ts">
@@ -23,6 +23,7 @@ const mapConfig = {
 	version: '2.0',
 }
 
+/** 构建信息窗体 */
 const initInfoWindow = (): string[] => {
 	const info: string[] = []
 	info.push(`<div style=\"padding: 5px; color: black; font-size: 12px"\>我的位置</div>`)

@@ -1,5 +1,5 @@
 <template>
-	<header class="bg-weather-primary shadow-lg sticky top-0">
+	<header class="bg-weather-primary shadow-lg sticky top-0 z-10">
 		<nav
 			class="container flex flex-col sm:flex-row items-center py-6 gap-4 text-white"
 		>
@@ -14,8 +14,14 @@
 					@click="modalActive = !modalActive"
 				/>
 				<FontAwesomeIcon
-					icon="fa-solid fa-plus"
+					icon="fa-location-dot"
 					class="text-xl hover:text-weather-secondary cursor-pointer transition-all delay-100"
+					@click="$router.push('/map')"
+				/>
+				<FontAwesomeIcon
+					icon="fa-train-subway"
+					class="text-xl hover:text-weather-secondary cursor-pointer transition-all delay-100"
+					@click="$router.push('/subway')"
 				/>
 			</div>
 			<!-- 模态框 -->
@@ -56,12 +62,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import BaseModal from './BaseModal.vue'
+import { ref } from 'vue'
 
 const modalActive = ref(false)
 
 const toggleModal = () => {
-    modalActive.value = !modalActive.value
+	modalActive.value = !modalActive.value
 }
 </script>

@@ -1,23 +1,16 @@
 <script setup lang="ts">
+import BaseMap from '@/components/BaseMap.vue'
 import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
-import {
-	useWeatherStore,
-	useCityStore,
-	useSearchStore,
-	useMapStore,
-} from '@/stores'
-import BaseMap from '@/components/BaseMap.vue'
+import { useWeatherStore, useCityStore, useSearchStore } from '@/stores'
 
 const weatherStore = useWeatherStore()
 const cityStore = useCityStore()
 const searchStore = useSearchStore()
-const mapStore = useMapStore()
 
 const { weatherInfoLives, weatherInfoCasts } = storeToRefs(weatherStore)
 const { relatedLocations } = storeToRefs(cityStore)
 const { currentAdcode } = storeToRefs(searchStore)
-const { staticMapImage } = storeToRefs(mapStore)
 
 const searchKeyword = ref('')
 /** 根据用户输入的关键字查找对应的地区 */
@@ -67,8 +60,6 @@ const handleSuccessGetUserLocation = (pos: GeolocationPosition) => {
 		// 根据adcode获取当前城市的天气
 		getWeatherByLocationAcode(currentAdcode.value)
 	})
-	// 根据经纬度绘制静态地图
-	// mapStore.queryStaticMapByLocation(combineStr)
 }
 
 // 获取用户当前位置
@@ -144,18 +135,11 @@ const computeDay = (weekday: number) => {
 				class="border-white border-opacity-10 border w-full my-[20px]"
 			/>
 			<!-- AMap地图 -->
-			<div id="map-container"></div>
-			<!-- <template v-show="currentGeo.longitude !== 0"> -->
-				<BaseMap
-					:longitude="currentGeo.longitude"
-					:latitude="currentGeo.latitude"
-				/>
-			<!-- </template> -->
+			<BaseMap
+				:longitude="currentGeo.longitude"
+				:latitude="currentGeo.latitude"
+			/>
 
-			<!-- 静态地图 -->
-			<!-- <div class="flex flex-1 justify-center">
-				<img :src="staticMapImage" alt="" />
-			</div> -->
 			<hr
 				class="border-white border-opacity-10 border w-full my-[20px]"
 			/>
