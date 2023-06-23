@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import SiteNavigation from './components/SiteNavigation.vue'
+
+;(window as any)._AMapSecurityConfig = {
+	securityJsCode: import.meta.env.VITE_MAP_SECURITY_KEY,
+}
 </script>
 
 <template>

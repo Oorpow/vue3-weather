@@ -135,10 +135,10 @@ const computeDay = (weekday: number) => {
 				class="border-white border-opacity-10 border w-full my-[20px]"
 			/>
 			<!-- AMap地图 -->
-			<BaseMap
+			<!-- <BaseMap
 				:longitude="currentGeo.longitude"
 				:latitude="currentGeo.latitude"
-			/>
+			/> -->
 
 			<hr
 				class="border-white border-opacity-10 border w-full my-[20px]"

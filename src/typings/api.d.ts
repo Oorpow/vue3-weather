@@ -93,4 +93,8 @@ declare namespace ApiStaticMap {
         zoom: string
         [propName: string]: any
     }
+    interface DrivingSearchArr {
+        keyword: string
+        city?: string
+    }
 }
