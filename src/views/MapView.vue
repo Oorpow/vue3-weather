@@ -33,7 +33,7 @@
 						v-for="iconItem in iconList"
 						:key="iconItem.id"
 						:icon="iconItem.icon"
-						@click="handleIconItemClick(iconItem.id)"
+						@click="currentIconItem = iconItem.id"
 					/>
 				</div>
 				<FontAwesomeIcon
@@ -72,38 +72,71 @@
 				<FontAwesomeIcon
 					class="fa-icon hover:text-white text-2xl"
 					icon="fa-location-arrow"
+					@click="handleRoutePlanning"
 				/>
 			</div>
 		</div>
-		<!-- panel result -->
 		<div
-			ref="linePanelRef"
-			class="top-[100px] left-[50px] w-full h-[300px] rounded-b-md"
+			ref="searchPlacePanelRef"
+			class="top-[100px] left-[50px] w-full h-[300px] overflow-y-auto rounded-b-md"
 		></div>
 	</div>
+	<!-- 路线规划结果 -->
+	<div
+		ref="linePanelRef"
+		class="absolute top-[100px] right-[50px] w-[300px] h-[300px] rounded-b-md"
+	></div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, shallowRef } from 'vue'
+import { onMounted, ref, shallowRef, watchEffect } from 'vue'
 import '@amap/amap-jsapi-types'
 import AMapLoader from '@amap/amap-jsapi-loader'
+import { useMapPlugin } from '@/hooks'
+import { TravelEnum } from '@/common'
 
 const map: any = shallowRef(null)
 /** 存放placeSearch插件实例对象 */
 const placeSearch: any = ref(null)
-const drivingInstance: any = ref(null)
+const globalPluginInstance: any = ref(null)
 // 存放inputRef
 const startPointInputRef = ref<HTMLElement | null>(null)
 const endPointInputRef = ref<HTMLElement | null>(null)
 const tipInputRef = ref<HTMLElement | null>(null)
 const tipPanelRef = ref<HTMLElement | null>(null)
 const linePanelRef = ref<HTMLElement | null>(null)
+const searchPlacePanelRef = ref<HTMLElement | null>(null)
+
+/** icon列表 */
+const iconList = [
+	{
+		id: 1,
+		icon: 'car',
+	},
+	{
+		id: 2,
+		icon: 'bus',
+	},
+	{
+		id: 3,
+		icon: 'bicycle',
+	},
+	{
+		id: 4,
+		icon: 'person-walking',
+	},
+]
+// 当前选中的icon
+const currentIconItem = ref<number>(1)
 
 /** 插件列表 */
 const mapPluginsList: string[] = [
 	'AMap.PlaceSearch',
 	'AMap.AutoComplete',
 	'AMap.Driving',
+	'AMap.Transfer',
+	'AMap.Riding',
+	'AMap.Walking',
 ]
 /** 搜索插件配置项 */
 const searchPluginOptions = {
@@ -130,25 +163,29 @@ function initMap() {
 
 			// 挂载插件
 			AMap.plugin(mapPluginsList, () => {
+				watchEffect(() => {
+					const [currentInstance] = useMapPlugin(
+						AMap,
+						currentIconItem.value,
+						map.value,
+						linePanelRef.value!
+					)
+					globalPluginInstance.value = currentInstance
+					console.log('effect', globalPluginInstance.value)
+				})
 				const startPointComplete = new AMap.AutoComplete({
 					input: startPointInputRef.value,
 				})
 				const endPointComplete = new AMap.AutoComplete({
 					input: endPointInputRef.value,
 				})
-
-				drivingInstance.value = new AMap.Driving({
-					map: map.value,
-					panel: linePanelRef.value,
-				})
 				// 根据面板来决定使用哪个panel作为搜索结果的展示
 				placeSearch.value = new AMap.PlaceSearch({
 					...searchPluginOptions,
-					panel: linePanelRef.value,
+					panel: searchPlacePanelRef.value,
 				})
-
-				startPointComplete.on('select', handleSelect)
-				endPointComplete.on('select', handleSelect)
+				startPointComplete.on('select', handleStartPointSelect)
+				endPointComplete.on('select', handleEndPointSelect)
 			})
 		})
 		.catch((e) => {
@@ -157,44 +194,40 @@ function initMap() {
 }
 
 /** 起点和终点数组 */
-const drivingSearchArr: ApiStaticMap.DrivingSearchArr[] = []
+const transportSearchArr: ApiStaticMap.DrivingSearchArr[] = []
 
-/** 当用户选中搜索结果的项时触发 */
-const handleSelect = (e: any) => {
-	drivingSearchArr.push({
+/** 当用户选中起点搜索结果的项时触发 */
+const handleStartPointSelect = (e: any) => {
+	transportSearchArr[0] = {
 		keyword: e.poi.name,
-	})
-
+	}
 	placeSearch.value.setCity(e.poi.adcode)
 	placeSearch.value.search(e.poi.name)
-	// 起始点选择完毕后，进行路径规划
-	drivingSearchArr.length === 2 && drivingInstance.value.search(drivingSearchArr)
 }
 
-/** icon列表 */
-const iconList = [
-	{
-		id: 1,
-		icon: 'car',
-	},
-	{
-		id: 2,
-		icon: 'bus',
-	},
-	{
-		id: 3,
-		icon: 'person-walking',
-	},
-]
-// 当前选中的icon
-const currentIconItem = ref<number>(1)
+/** 当用户选中起点搜索结果的项时触发 */
+const handleEndPointSelect = (e: any) => {
+	transportSearchArr[1] = {
+		keyword: e.poi.name,
+	}
+	placeSearch.value.setCity(e.poi.adcode)
+	placeSearch.value.search(e.poi.name)
+}
 
-/** 处理icon的单击事件，切换路线规划的出行工具 */
-function handleIconItemClick(id: number) {
-	currentIconItem.value = id
+/** 执行路线规划操作 */
+const handleRoutePlanning = () => {
+	if (transportSearchArr[0] && transportSearchArr.length === 2) {
+		globalPluginInstance.value.search(transportSearchArr)
+	}
 }
 
 onMounted(() => {
 	initMap()
 })
 </script>
+
+<style>
+.amap-lib-driving {
+	@apply h-[300px] overflow-y-auto;
+}
+</style>

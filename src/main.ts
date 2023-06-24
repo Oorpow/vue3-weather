@@ -24,7 +24,8 @@ import {
 	faBus,
 	faPersonWalking,
 	faXmark,
-	faLocationArrow
+	faLocationArrow,
+	faBicycle
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(faUserSecret)
@@ -39,6 +40,7 @@ library.add(faBus)
 library.add(faPersonWalking)
 library.add(faXmark)
 library.add(faLocationArrow)
+library.add(faBicycle)
 
 const app = createApp(App)
 
