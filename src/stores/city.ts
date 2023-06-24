@@ -22,6 +22,7 @@ export const useCityStore = defineStore('cityStore', {
 			this.relatedLocations.length = 0
 			this.relatedLocations.push(...(result as ApiCity.Location[]))
 		},
+		/** 清空搜索列表 */
 		clearRelatedLocations() {
 			this.relatedLocations.length = 0
 		}

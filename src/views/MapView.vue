@@ -1,99 +1,8 @@
-<template>
-	<KeepAlive>
-		<div id="container" class="w-full h-screen relative"></div>
-	</KeepAlive>
-	<!-- 地点搜索结果面板 -->
-	<div class="absolute top-[100px] left-[20px] w-[400px]" v-if="false">
-		<!-- 搜索框 -->
-		<div id="myPageTop">
-			<input
-				ref="tipInputRef"
-				type="search"
-				class="input-search"
-				placeholder="请输入关键字"
-			/>
-		</div>
-		<!-- 搜索结果面板显示 -->
-		<div
-			ref="tipPanelRef"
-			class="top-[100px] left-[50px] w-full h-[300px]"
-		></div>
-	</div>
-	<!-- 路线规划面板 -->
-	<div class="absolute top-[100px] left-[20px] w-[400px] p-4">
-		<!-- panel header -->
-		<div class="flex flex-col bg-gaode-primary p-4 rounded-t-md">
-			<div class="flex">
-				<div class="flex flex-1 justify-center gap-10">
-					<FontAwesomeIcon
-						class="fa-icon"
-						:class="
-							currentIconItem === iconItem.id ? 'text-white' : ''
-						"
-						v-for="iconItem in iconList"
-						:key="iconItem.id"
-						:icon="iconItem.icon"
-						@click="currentIconItem = iconItem.id"
-					/>
-				</div>
-				<FontAwesomeIcon
-					class="fa-icon text-white text-2xl"
-					icon="xmark"
-				/>
-			</div>
-			<!-- 搜索框容器 -->
-			<div class="my-5">
-				<div
-					class="flex h-[34px] leading-[34px] px-2 my-2 bg-line-search-input-primary"
-				>
-					<label class="text-placeholder-color">起</label>
-					<input
-						ref="startPointInputRef"
-						type="search"
-						class="input-line-search"
-						style="box-shadow: none"
-						placeholder="请输入起点"
-					/>
-				</div>
-				<div
-					class="flex h-[34px] leading-[34px] px-2 bg-line-search-input-primary"
-				>
-					<label class="text-placeholder-color">终</label>
-					<input
-						ref="endPointInputRef"
-						type="search"
-						class="input-line-search"
-						style="box-shadow: none"
-						placeholder="请输入终点"
-					/>
-				</div>
-			</div>
-			<div class="flex justify-end">
-				<FontAwesomeIcon
-					class="fa-icon hover:text-white text-2xl"
-					icon="fa-location-arrow"
-					@click="handleRoutePlanning"
-				/>
-			</div>
-		</div>
-		<div
-			ref="searchPlacePanelRef"
-			class="top-[100px] left-[50px] w-full h-[300px] overflow-y-auto rounded-b-md"
-		></div>
-	</div>
-	<!-- 路线规划结果 -->
-	<div
-		ref="linePanelRef"
-		class="absolute top-[100px] right-[50px] w-[300px] h-[300px] rounded-b-md"
-	></div>
-</template>
-
 <script setup lang="ts">
 import { onMounted, ref, shallowRef, watchEffect } from 'vue'
 import '@amap/amap-jsapi-types'
 import AMapLoader from '@amap/amap-jsapi-loader'
 import { useMapPlugin } from '@/hooks'
-import { TravelEnum } from '@/common'
 
 const map: any = shallowRef(null)
 /** 存放placeSearch插件实例对象 */
@@ -225,6 +134,96 @@ onMounted(() => {
 	initMap()
 })
 </script>
+
+<template>
+	<KeepAlive>
+		<div id="container" class="w-full h-screen relative"></div>
+	</KeepAlive>
+	<!-- 地点搜索结果面板 -->
+	<div class="absolute top-[100px] left-[20px] w-[400px]" v-if="false">
+		<!-- 搜索框 -->
+		<div id="myPageTop">
+			<input
+				ref="tipInputRef"
+				type="search"
+				class="input-search"
+				placeholder="请输入关键字"
+			/>
+		</div>
+		<!-- 搜索结果面板显示 -->
+		<div
+			ref="tipPanelRef"
+			class="top-[100px] left-[50px] w-full h-[300px]"
+		></div>
+	</div>
+	<!-- 路线规划面板 -->
+	<div class="absolute top-[100px] left-[20px] w-[400px] p-4">
+		<!-- panel header -->
+		<div class="flex flex-col bg-gaode-primary p-4 rounded-t-md">
+			<div class="flex">
+				<div class="flex flex-1 justify-center gap-10">
+					<FontAwesomeIcon
+						class="fa-icon"
+						:class="
+							currentIconItem === iconItem.id ? 'text-white' : ''
+						"
+						v-for="iconItem in iconList"
+						:key="iconItem.id"
+						:icon="iconItem.icon"
+						@click="currentIconItem = iconItem.id"
+					/>
+				</div>
+				<FontAwesomeIcon
+					class="fa-icon text-white text-2xl"
+					icon="xmark"
+				/>
+			</div>
+			<!-- 搜索框容器 -->
+			<div class="my-5">
+				<div
+					class="flex h-[34px] leading-[34px] px-2 my-2 bg-line-search-input-primary"
+				>
+					<label class="text-placeholder-color">起</label>
+					<input
+						ref="startPointInputRef"
+						type="search"
+						class="input-line-search"
+						style="box-shadow: none"
+						placeholder="请输入起点"
+					/>
+				</div>
+				<div
+					class="flex h-[34px] leading-[34px] px-2 bg-line-search-input-primary"
+				>
+					<label class="text-placeholder-color">终</label>
+					<input
+						ref="endPointInputRef"
+						type="search"
+						class="input-line-search"
+						style="box-shadow: none"
+						placeholder="请输入终点"
+					/>
+				</div>
+			</div>
+			<div class="flex justify-end">
+				<FontAwesomeIcon
+					class="fa-icon hover:text-white text-2xl"
+					icon="fa-location-arrow"
+					@click="handleRoutePlanning"
+				/>
+			</div>
+		</div>
+		<div
+			ref="searchPlacePanelRef"
+			class="top-[100px] left-[50px] w-full h-[300px] overflow-y-auto rounded-b-md"
+		></div>
+	</div>
+	<!-- 路线规划结果 -->
+	<div
+		ref="linePanelRef"
+		class="absolute top-[100px] right-[50px] w-[300px] h-[300px] rounded-b-md"
+	></div>
+</template>
 
 <style>
 .amap-lib-driving {

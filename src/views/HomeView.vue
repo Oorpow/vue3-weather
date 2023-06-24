@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import BaseMap from '@/components/BaseMap.vue'
 import { onMounted, ref } from 'vue'
+import BaseLineChart from '@/components/BaseLineChart.vue'
 import { storeToRefs } from 'pinia'
 import { useWeatherStore, useCityStore, useSearchStore } from '@/stores'
 
@@ -24,18 +24,33 @@ const searchCityOrState = () => {
  * 根据acode获取某个地点的天气
  * @param acode
  */
-const getWeatherByLocationAcode = async (acode: string) => {
+const getWeatherByLocationAcode = async (acode: string): Promise<void> => {
 	await weatherStore.getWeatherLivesOfCity(acode)
 	await weatherStore.getWeatherCastsOfCity(acode)
+	handleFormatLineChartData()
 }
 
+const lineChartData = ref<Chart.LineChartDataSource>({
+	dayTempData: <number[]>[],
+	nightTempData: <number[]>[],
+	xAxisData: <string[]>[],
+})
+
+/** 构造折线图所需的数据列表 */
+const handleFormatLineChartData = () => {
+	for (const cast of weatherInfoCasts.value) {
+		lineChartData.value.dayTempData.push(Number(cast.daytemp))
+		lineChartData.value.nightTempData.push(Number(cast.nighttemp))
+		lineChartData.value.xAxisData.push(computeDay(Number(cast.week)))
+	}
+}
+
+/** 当前经纬度 */
 const currentGeo = ref({
 	longitude: 0,
 	latitude: 0,
 })
-/**
- * 用户授权是否允许获取当前所在位置
- */
+/** 用户授权是否允许获取当前所在位置 */
 const getUserCurrentLocation = () => {
 	navigator.geolocation.getCurrentPosition(
 		handleSuccessGetUserLocation,
@@ -77,7 +92,7 @@ const weekDays = [
 	'星期日',
 ]
 /** 日期计算 */
-const computeDay = (weekday: number) => {
+const computeDay = (weekday: number): string => {
 	const day = new Date().getDay()
 	return weekday === day ? '今日' : weekDays[weekday - 1]
 }
@@ -131,35 +146,39 @@ const computeDay = (weekday: number) => {
 					/>
 				</div>
 			</div>
-			<hr
-				class="border-white border-opacity-10 border w-full my-[20px]"
-			/>
-			<!-- AMap地图 -->
-			<!-- <BaseMap
-				:longitude="currentGeo.longitude"
-				:latitude="currentGeo.latitude"
-			/> -->
-
-			<hr
-				class="border-white border-opacity-10 border w-full my-[20px]"
-			/>
+			<hr class="split-line" />
 			<!-- 预报天气 -->
+			<h1 class="flex justify-start font-semibold text-md">近4日天气/气温/风向</h1>
 			<div class="container flex flex-col text-white">
-				<h1 class="my-2">近4日天气预报</h1>
 				<div
 					class="flex items-center justify-between mt-4"
 					v-for="(cast, i) in weatherInfoCasts"
 					:key="i"
 				>
-					<div class="flex font-bold">
+					<div class="font-bold">
 						<span class="block w-[60px]">{{
 							computeDay(Number(cast.week))
 						}}</span>
-						<span>{{ cast.daytemp }}&deg</span>
 					</div>
-					<FontAwesomeIcon icon="fa-solid fa-cloud" class="text-lg" />
+					<div class="flex justify-start w-[90px]">
+						<span>{{ cast.dayweather }}</span>
+					</div>
+					<div class="flex justify-start w-[90px]">
+						<span
+							>{{ cast.daytemp }}&deg /
+							{{ cast.nighttemp }}&deg</span
+						>
+					</div>
+					<div class="flex justify-start w-[90px]">
+						<span>{{ cast.daywind }} / {{ cast.nightwind }}</span>
+					</div>
 				</div>
 			</div>
+			<hr class="split-line" />
+			<template v-if="lineChartData.dayTempData.length">
+				<!-- 早晚温差图表 -->
+				<BaseLineChart :dataSource="lineChartData" />
+			</template>
 		</div>
 	</main>
 </template>

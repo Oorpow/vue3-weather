@@ -79,8 +79,10 @@ declare namespace ApiWeather {
         date: Date | string
         dayweather: string
         daytemp: string
+        daywind: string
         nighttemp: string
         nightweather: string
+        nightwind: string
         week: string
     }
 }
@@ -96,5 +98,13 @@ declare namespace ApiStaticMap {
     interface DrivingSearchArr {
         keyword: string
         city?: string
+    }
+}
+
+declare namespace Chart {
+    interface LineChartDataSource {
+        xAxisData: string[]
+        dayTempData: number[]
+        nightTempData: number[]
     }
 }
